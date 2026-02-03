@@ -432,8 +432,10 @@ export default function Home() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
+                            className="flex flex-col items-center"
                         >
-                            <div className="flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-medium text-cyan-400 mb-4 mx-auto w-fit">
+                            <img src="/logo.png" alt="Logo" className="w-24 h-24 mb-6 object-contain" />
+                            <div className="flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-medium text-cyan-400 mb-4 w-fit">
                                 <div className="w-4 h-4 rounded px-0.5 bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
                                     <img src="/icon.png" alt="Logo" className="w-full h-full object-contain" />
                                 </div>

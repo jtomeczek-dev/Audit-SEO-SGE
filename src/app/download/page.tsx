@@ -33,9 +33,9 @@ export default function DownloadPage() {
             <div className="relative z-10 container mx-auto px-6 py-20">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-16">
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <Sparkles className="text-white w-4 h-4" />
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden shadow-lg group-hover:scale-110 transition-transform p-1.5">
+                            <img src="/icon.png" alt="Logo" className="w-full h-full object-contain" />
                         </div>
                         <span className="font-bold text-xl tracking-tight text-white">{t.title}</span>
                     </Link>
