@@ -227,7 +227,7 @@ export default function Home() {
             pdf.setFont("Roboto", "normal");
             pdf.setTextColor(150, 150, 150);
             pdf.text(`Data opracowania: ${new Date().toLocaleDateString('pl-PL')}`, margin, pageHeight - 30);
-            pdf.text("Wygenerowano przez: Audyt SEO i AI", margin, pageHeight - 25);
+            pdf.text("Wygenerowano przez: Audyt SEO i SGE", margin, pageHeight - 25);
 
             // --- STRONA 2: PODSUMOWANIE MENEDŻERSKIE ---
             addNewPage();
@@ -398,7 +398,7 @@ export default function Home() {
                         >
                             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-medium text-cyan-400 mb-4">
                                 <Sparkles className="w-3 h-3" />
-                                Audyt SEO i AI v1.0.0
+                                Audyt SEO i SGE v1.0.0
                             </span>
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gradient">
                                 Analiza pod kątem SEO i SGE
@@ -859,7 +859,7 @@ export default function Home() {
                     </AnimatePresence>
                     <footer className="mt-20 py-8 border-t border-slate-800/50 text-center">
                         <p className="text-slate-500 text-sm">
-                            JT CONSULTING &copy; w ramach projektu{" "}
+                            Juliusz Tomeczek &copy; w ramach projektu{" "}
                             <a
                                 href="https://aiforeveryone.blog"
                                 target="_blank"

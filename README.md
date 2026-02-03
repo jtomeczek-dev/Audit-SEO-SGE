@@ -1,4 +1,4 @@
-# Audyt SEO i AI
+# Audyt SEO i SGE
 
 Profesjonalne narzędzie do wnikliwej analizy technicznej stron internetowych, optymalizacji pod kątem tradycyjnych wyszukiwarek (SEO) oraz systemów nowej generacji (Google SGE / AI Readiness).
 
@@ -23,8 +23,8 @@ Profesjonalne narzędzie do wnikliwej analizy technicznej stron internetowych, o
 
 1. **Sklonuj repozytorium:**
    ```bash
-   git clone https://github.com/jtomeczek-dev/Audit-SEO-AI.git
-   cd Audit-SEO-AI
+   git clone https://github.com/jtomeczek-dev/Audit-SEO-SGE.git
+   cd Audit-SEO-SGE
    ```
 
 2. **Zainstaluj zależności:**
