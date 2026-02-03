@@ -107,8 +107,13 @@ export async function analyzeUrl(url: string): Promise<AuditResult> {
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    const title = $('title').text();
-    const description = $('meta[name="description"]').attr('content') || '';
+    const title = $('title').text().trim();
+    const description = (
+        $('meta[name="description"]').attr('content') ||
+        $('meta[name="Description"]').attr('content') ||
+        $('meta[property="og:description"]').attr('content') ||
+        ""
+    ).trim();
     const lang = $('html').attr('lang');
 
     const h1Data = $('h1').map((_, el) => {
@@ -272,8 +277,8 @@ export async function analyzeUrl(url: string): Promise<AuditResult> {
 function getSeoChecks(data: any): ScoreCheck[] {
     const checks: ScoreCheck[] = [
         { label: "Nagłówek H1 (dokładnie jeden)", points: data.h1s.length === 1 ? 25 : 0, maxPoints: 25, passed: data.h1s.length === 1, impact: data.h1s.length === 1 ? 0 : 25 },
-        { label: "Tag Title (30-65 znaków)", points: data.title.length >= 30 && data.title.length <= 65 ? 25 : 0, maxPoints: 25, passed: data.title.length >= 30 && data.title.length <= 65, impact: data.title.length >= 30 && data.title.length <= 65 ? 0 : 25 },
-        { label: "Meta Description (obecny)", points: !!data.description ? 25 : 0, maxPoints: 25, passed: !!data.description, impact: !!data.description ? 0 : 25 },
+        { label: "Tag Title (30-65 znaków)", points: data.title.length >= 30 && data.title.length <= 65 ? 25 : 10, maxPoints: 25, passed: data.title.length >= 30 && data.title.length <= 65, impact: data.title.length >= 30 && data.title.length <= 65 ? 0 : 15 },
+        { label: "Meta Description (obecny)", points: data.description.length > 0 ? 25 : 0, maxPoints: 25, passed: data.description.length > 0, impact: data.description.length > 0 ? 0 : 25 },
         { label: "Atrybuty ALT dla obrazów", points: (data.images === 0 || data.imagesWithAlt / data.images > 0.9) ? 25 : 0, maxPoints: 25, passed: (data.images === 0 || data.imagesWithAlt / data.images > 0.9), impact: (data.images === 0 || data.imagesWithAlt / data.images > 0.9) ? 0 : 25 },
     ];
     return checks;
