@@ -398,7 +398,7 @@ export default function Home() {
                         >
                             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-xs font-medium text-cyan-400 mb-4">
                                 <Sparkles className="w-3 h-3" />
-                                Narzędzie Audytu SEO Nowej Generacji
+                                Audyt SEO i AI v1.0.0
                             </span>
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gradient">
                                 Optymalizacja dla AI i Ludzi
