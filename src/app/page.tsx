@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ChevronUp, ChevronDown, Search, Globe, Layout, ListChecks, AlertCircle, Sparkles, FileText, Download, Zap, Shield, ArrowRight, Layers, BarChart3, Clock, CheckCircle2, XCircle, Info, Maximize2, ExternalLink, Loader2, LayoutGrid, ListTree, Image as ImageIcon } from "lucide-react";
+import { ChevronUp, ChevronDown, Search, Globe, Layout, ListChecks, AlertCircle, Sparkles, FileText, Download, Zap, Shield, ArrowRight, Layers, BarChart3, Clock, CheckCircle2, XCircle, Info, Maximize2, ExternalLink, Loader2, LayoutGrid, ListTree, Monitor, Image as ImageIcon } from "lucide-react";
+import Link from "next/link";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { motion, AnimatePresence } from "framer-motion";
@@ -389,7 +390,17 @@ export default function Home() {
                     <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-600/10 blur-[120px] rounded-full" />
                 </div>
 
-                <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">
+                <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+                    <nav className="flex justify-end mb-8">
+                        <Link
+                            href="/pobierz"
+                            className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/50 border border-slate-800 text-sm font-medium text-slate-400 hover:text-white hover:border-slate-700 transition-all shadow-lg"
+                        >
+                            <Monitor className="w-4 h-4 text-cyan-500 group-hover:scale-110 transition-transform" />
+                            <span>Pobierz na macOS</span>
+                        </Link>
+                    </nav>
+
                     <header className="text-center mb-16">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

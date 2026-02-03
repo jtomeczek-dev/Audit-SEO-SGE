@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, X, Bot, User, Loader2, MessageSquare, Sparkles } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { isDesktop } from "@/lib/env";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -25,7 +27,22 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [localApiKey, setLocalApiKey] = useState<string>("");
+    const [showSettings, setShowSettings] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (isDesktop) {
+            const saved = localStorage.getItem("gemini_api_key");
+            if (saved) setLocalApiKey(saved);
+        }
+    }, []);
+
+    const saveApiKey = (key: string) => {
+        setLocalApiKey(key);
+        localStorage.setItem("gemini_api_key", key);
+        setShowSettings(false);
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,22 +62,51 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    messages: newMessages,
-                    context: context
-                }),
-            });
+            if (isDesktop && localApiKey) {
+                // Direct call for Desktop
+                const genAI = new GoogleGenerativeAI(localApiKey);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Wystąpił błąd podczas komunikacji z Gemini.");
+                const systemInstruction = `Jesteś ekspertem ds. SEO oraz AI Readiness (SGE). Twoim zadaniem jest pomóc użytkownikowi zrozumieć wyniki audytu jego strony internetowej i doradzić, jak może poprawić parametry analizowane przez aplikację.
+        
+        Kontekst audytu:
+        ${JSON.stringify(context, null, 2)}
+        
+        Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych zawartych w kontekście. Jeśli użytkownik pyta o coś poza zakresem audytu, dyplomatycznie skieruj go z powrotem na tematy związane z SEO i optymalizacją pod modele AI.`;
+
+                const chat = model.startChat({
+                    history: [
+                        { role: 'user', parts: [{ text: systemInstruction }] },
+                        { role: 'model', parts: [{ text: "Rozumiem mój cel. Jestem ekspertem SEO/SGE i pomogę Ci zinterpretować wyniki audytu dla tej strony. O co chciałbyś zapytać?" }] },
+                        ...messages.map(m => ({
+                            role: m.role === 'user' ? 'user' : 'model',
+                            parts: [{ text: m.content }]
+                        }))
+                    ]
+                });
+
+                const result = await chat.sendMessage(input);
+                const text = result.response.text();
+                setMessages([...newMessages, { role: 'assistant', content: text }]);
+            } else {
+                // Default API call for Web
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        messages: newMessages,
+                        context: context
+                    }),
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || "Wystąpił błąd podczas komunikacji z Gemini.");
+                }
+
+                const assistantMessage = await response.json();
+                setMessages([...newMessages, assistantMessage]);
             }
-
-            const assistantMessage = await response.json();
-            setMessages([...newMessages, assistantMessage]);
         } catch (error: any) {
             setMessages([...newMessages, { role: 'assistant', content: `Błąd: ${error.message}` }]);
         } finally {
@@ -119,13 +165,73 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                                 <p className="text-[10px] text-cyan-400 uppercase tracking-widest font-black">Ekspert SEO</p>
                             </div>
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="p-2 hover:bg-slate-700 rounded-full transition text-slate-400 hover:text-white"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                            {isDesktop && (
+                                <button
+                                    onClick={() => setShowSettings(!showSettings)}
+                                    className={cn(
+                                        "p-2 rounded-full transition",
+                                        showSettings ? "bg-cyan-500/20 text-cyan-400" : "hover:bg-slate-700 text-slate-400 hover:text-white"
+                                    )}
+                                    title="Ustawienia klucza API"
+                                >
+                                    <Send className="w-5 h-5 rotate-90" /> {/* Simulating settings icon with send rotated */}
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="p-2 hover:bg-slate-700 rounded-full transition text-slate-400 hover:text-white"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Settings Overlay */}
+                    {showSettings && (
+                        <div className="absolute inset-0 z-20 bg-slate-900/95 backdrop-blur-sm p-6 flex flex-col justify-center gap-4">
+                            <div className="text-center mb-4">
+                                <h4 className="text-lg font-bold text-white mb-2">Twój Klucz Gemini API</h4>
+                                <p className="text-xs text-slate-400">
+                                    W wersji Desktop używasz własnego klucza, aby nie mieć limitów zapytań.
+                                </p>
+                            </div>
+                            <input
+                                type="password"
+                                value={localApiKey}
+                                onChange={(e) => setLocalApiKey(e.target.value)}
+                                placeholder="Wklej klucz API (AIza...)"
+                                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => saveApiKey(localApiKey)}
+                                    className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-cyan-900/20"
+                                >
+                                    Zapisz Klucz
+                                </button>
+                                <button
+                                    onClick={() => setShowSettings(false)}
+                                    className="px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl transition"
+                                >
+                                    Anuluj
+                                </button>
+                            </div>
+                            <p className="text-[10px] text-slate-500 text-center mt-4 uppercase">
+                                Klucz jest zapisywany lokalnie na Twoim komputerze.
+                            </p>
+                        </div>
+                    ) || (isDesktop && !localApiKey && !messages.length) && (
+                        <div className="absolute inset-x-4 top-20 z-10 p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl text-center">
+                            <p className="text-xs text-cyan-200 mb-3">Wymagany klucz API do działania w wersji Desktop.</p>
+                            <button
+                                onClick={() => setShowSettings(true)}
+                                className="text-[10px] font-black uppercase tracking-widest text-white bg-cyan-600 px-4 py-2 rounded-full hover:bg-cyan-500 transition"
+                            >
+                                Skonfiguruj Klucz
+                            </button>
+                        </div>
+                    )}
 
                     {/* Messages */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">

@@ -2,12 +2,15 @@
   "name": "seooptimizer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "electron/main.cjs",
+  "homepage": "./",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:macos": "electron .",
+    "build:macos": "NEXT_PUBLIC_IS_DESKTOP=true next build && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,8 @@
     "@tailwindcss/postcss": "^4.1.18",
     "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
+    "electron-is-dev": "^3.0.1",
+    "electron-updater": "^6.7.3",
     "framer-motion": "^12.30.0",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
@@ -25,6 +30,7 @@
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.563.0",
     "next": "^16.1.6",
+    "next-electron-server": "^1.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwind-merge": "^3.4.0"
@@ -34,10 +40,35 @@
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.24",
+    "electron": "^40.1.0",
+    "electron-builder": "^26.7.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.6",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
+  },
+  "build": {
+    "appId": "com.jtomeczek.auditseosge",
+    "productName": "Audyt SEO i SGE",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dmg"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "jtomeczek-dev",
+        "repo": "Audit-SEO-SGE"
+      }
+    ]
   }
 }
