@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ScoreCheck } from "@/lib/analyzer";
+import { Locale } from "@/lib/translations";
 
 interface ScoreCardProps {
     score: number;
@@ -10,9 +11,10 @@ interface ScoreCardProps {
     color: string; // hex color or tailwind class
     description?: string;
     breakdown?: ScoreCheck[];
+    lang?: Locale;
 }
 
-export function ScoreCard({ score, label, icon, color, description, breakdown }: ScoreCardProps) {
+export function ScoreCard({ score, label, icon, color, description, breakdown, lang = "pl" }: ScoreCardProps) {
     return (
         <div className="glass-morphism p-8 rounded-2xl relative overflow-hidden group">
             <div className="relative z-10 flex flex-col items-center text-center">
@@ -34,7 +36,7 @@ export function ScoreCard({ score, label, icon, color, description, breakdown }:
                 {breakdown && (
                     <div className="mt-8 w-full space-y-3 text-left">
                         <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2 border-b border-slate-800/50 pb-2 flex justify-between">
-                            <span>Lista Kontrolna</span>
+                            <span>{lang === 'pl' ? 'Lista Kontrolna' : 'Checklist'}</span>
                             <span>Status</span>
                         </div>
                         {breakdown.map((check, i) => (

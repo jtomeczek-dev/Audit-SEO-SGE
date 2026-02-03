@@ -3,13 +3,15 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, Info, CheckCircle, ArrowUpRight } from "lucide-react";
 import { Recommendation } from "@/lib/analyzer";
+import { Locale } from "@/lib/translations";
 
 interface RecommendationCardProps {
     recommendation: Recommendation;
     index: number;
+    lang?: Locale;
 }
 
-export function RecommendationCard({ recommendation, index }: RecommendationCardProps) {
+export function RecommendationCard({ recommendation, index, lang = "pl" }: RecommendationCardProps) {
     const getPriorityColor = () => {
         switch (recommendation.priority) {
             case 'high': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
@@ -21,9 +23,9 @@ export function RecommendationCard({ recommendation, index }: RecommendationCard
 
     const getPriorityLabel = () => {
         switch (recommendation.priority) {
-            case 'high': return 'Wysoki';
-            case 'medium': return 'Średni';
-            case 'low': return 'Niski';
+            case 'high': return lang === "pl" ? 'Wysoki' : 'High';
+            case 'medium': return lang === "pl" ? 'Średni' : 'Medium';
+            case 'low': return lang === "pl" ? 'Niski' : 'Low';
             default: return recommendation.priority;
         }
     };

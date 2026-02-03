@@ -1,55 +1,56 @@
-# Audyt SEO i SGE
+# SEO and SGE Audit
 
-Profesjonalne narzędzie do wnikliwej analizy technicznej stron internetowych, optymalizacji pod kątem tradycyjnych wyszukiwarek (SEO) oraz systemów nowej generacji (Google SGE / AI Readiness).
+Professional tool for deep technical analysis of websites, optimized for traditional search engines (SEO) and next-generation systems (Google SGE / AI Readiness).
 
-## 🚀 Główne Funkcje
+## 🚀 Main Features
 
-- **Pełny Audyt Techniczny:** Analiza tagów meta, struktury nagłówków H1-H6, obrazów (ALT) oraz wydajności.
-- **AI Readiness (SGE):** Ocena gotowości treści na potrzeby systemów Search Generative Experience.
-- **Interaktywny Konsultant Gemini AI:** Wbudowany czat, który potrafi analizować wyniki audytu i doradzać konkretne poprawki.
-- **Eksport do PDF:** Generowanie profesjonalnych raportów biznesowych z pełnym wsparciem polskich znaków.
-- **Analiza Całych Serwisów:** Funkcja crawlowania witryny w celu znalezienia błędów na wielu podstronach jednocześnie.
+- **Full Technical Audit:** Analysis of meta tags, H1-H6 header structure, images (ALT), and performance.
+- **AI Readiness (SGE):** Assessing content readiness for Search Generative Experience systems.
+- **Interactive Gemini AI Consultant:** Built-in chat that can analyze audit results and advise on specific fixes.
+- **Multi-language Support:** Full interface and AI support for both Polish and English.
+- **Export to PDF:** Generation of professional business reports with full character support.
+- **Site-wide Analysis:** Website crawling feature to find errors on multiple pages simultaneously.
 
-## 🛠️ Stos Technologiczny
+## 🛠️ Tech Stack
 
 - **Framework:** Next.js 15+ (App Router)
-- **Język:** TypeScript
-- **Stylizacja:** Tailwind CSS
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
 - **AI:** Google Gemini API (@google/generative-ai)
 - **PDF:** jsPDF + jspdf-autotable
 - **UI/UX:** Framer Motion, Lucide React
 
-## 📋 Instalacja i Uruchomienie
+## 📋 Installation and Setup
 
-1. **Sklonuj repozytorium:**
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/jtomeczek-dev/Audit-SEO-SGE.git
    cd Audit-SEO-SGE
    ```
 
-2. **Zainstaluj zależności:**
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. **Skonfiguruj zmienne środowiskowe:**
-   Utwórz plik `.env.local` w głównym katalogu i dodaj swój klucz API:
+3. **Configure environment variables:**
+   Create a `.env.local` file in the root directory and add your API key:
    ```env
-   GEMINI_API_KEY=twój_klucz_api
+   GEMINI_API_KEY=your_api_key
    ```
 
-4. **Uruchom wersję deweloperską:**
+4. **Run development version:**
    ```bash
    npm run dev
    ```
 
-## 🔒 Bezpieczeństwo
+## 🔒 Security
 
-Aplikacja jest zaprojektowana z myślą o bezpieczeństwie:
-- Klucze API są przechowywane wyłącznie po stronie serwera.
-- Plik `.env.local` jest wykluczony z systemu kontroli wersji (git).
-- Wszystkie wejścia użytkownika są walidowane pod kątem poprawności URL.
+The application is designed with security in mind:
+- API keys are stored exclusively on the server side (for web version).
+- The `.env.local` file is excluded from version control (git).
+- All user inputs are validated for URL correctness.
 
-## 📝 Autor
+## 📝 Author
 
-Projekt stworzony przez **Juliusz Tomeczek** w ramach projektu [AIforEveryone.blog](https://aiforeveryone.blog).
+Project created by **Juliusz Tomeczek** as part of the [AIforEveryone.blog](https://aiforeveryone.blog) project.

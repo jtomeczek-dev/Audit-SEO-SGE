@@ -7,6 +7,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { isDesktop } from "@/lib/env";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { translations, Locale } from "@/lib/translations";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -21,9 +22,11 @@ interface GeminiChatProps {
     context: any;
     isOpen: boolean;
     onClose: () => void;
+    lang?: Locale;
 }
 
-export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
+export function GeminiChat({ context, isOpen, onClose, lang = "pl" }: GeminiChatProps) {
+    const t = translations[lang];
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -67,17 +70,28 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                 const genAI = new GoogleGenerativeAI(localApiKey);
                 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-                const systemInstruction = `Jesteś ekspertem ds. SEO oraz AI Readiness (SGE). Twoim zadaniem jest pomóc użytkownikowi zrozumieć wyniki audytu jego strony internetowej i doradzić, jak może poprawić parametry analizowane przez aplikację.
+                const systemInstruction = lang === "pl"
+                    ? `Jesteś ekspertem ds. SEO oraz AI Readiness (SGE). Twoim zadaniem jest pomóc użytkownikowi zrozumieć wyniki audytu jego strony internetowej i doradzić, jak może poprawić parametry analizowane przez aplikację.
         
         Kontekst audytu:
         ${JSON.stringify(context, null, 2)}
         
-        Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych zawartych w kontekście. Jeśli użytkownik pyta o coś poza zakresem audytu, dyplomatycznie skieruj go z powrotem na tematy związane z SEO i optymalizacją pod modele AI.`;
+        Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych zawartych w kontekście. Jeśli użytkownik pyta o coś poza zakresem audytu, dyplomatycznie skieruj go z powrotem na tematy związane z SEO i optymalizacją pod modele AI.`
+                    : `You are an expert in SEO and AI Readiness (SGE). Your task is to help the user understand their website audit results and advise on how to improve parameters analyzed by the application.
+        
+        Audit Context:
+        ${JSON.stringify(context, null, 2)}
+        
+        Respond concretely, professionally, and in English. Focus on the data provided in the context. If the user asks about something outside the audit scope, diplomatically steer them back to topics related to SEO and AI optimization.`;
+
+                const initialAssistantMessage = lang === "pl"
+                    ? "Rozumiem mój cel. Jestem ekspertem SEO/SGE i pomogę Ci zinterpretować wyniki audytu dla tej strony. O co chciałbyś zapytać?"
+                    : "I understand my goal. I am an SEO/SGE expert and I will help you interpret the audit results for this page. What would you like to ask?";
 
                 const chat = model.startChat({
                     history: [
                         { role: 'user', parts: [{ text: systemInstruction }] },
-                        { role: 'model', parts: [{ text: "Rozumiem mój cel. Jestem ekspertem SEO/SGE i pomogę Ci zinterpretować wyniki audytu dla tej strony. O co chciałbyś zapytać?" }] },
+                        { role: 'model', parts: [{ text: initialAssistantMessage }] },
                         ...messages.map(m => ({
                             role: m.role === 'user' ? 'user' : 'model',
                             parts: [{ text: m.content }]
@@ -95,20 +109,21 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         messages: newMessages,
-                        context: context
+                        context: context,
+                        lang: lang
                     }),
                 });
 
                 if (!response.ok) {
                     const data = await response.json();
-                    throw new Error(data.error || "Wystąpił błąd podczas komunikacji z Gemini.");
+                    throw new Error(data.error || (lang === "pl" ? "Wystąpił błąd podczas komunikacji z Gemini." : "An error occurred while communicating with Gemini."));
                 }
 
                 const assistantMessage = await response.json();
                 setMessages([...newMessages, assistantMessage]);
             }
         } catch (error: any) {
-            setMessages([...newMessages, { role: 'assistant', content: `Błąd: ${error.message}` }]);
+            setMessages([...newMessages, { role: 'assistant', content: `${lang === "pl" ? "Błąd" : "Error"}: ${error.message}` }]);
         } finally {
             setIsLoading(false);
         }
@@ -161,8 +176,8 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                                 <Sparkles className="text-white w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-white text-sm">Konsultant Gemini AI</h3>
-                                <p className="text-[10px] text-cyan-400 uppercase tracking-widest font-black">Ekspert SEO</p>
+                                <h3 className="font-bold text-white text-sm">{lang === 'pl' ? 'Konsultant Gemini AI' : 'Gemini AI Consultant'}</h3>
+                                <p className="text-[10px] text-cyan-400 uppercase tracking-widest font-black">{lang === 'pl' ? 'Ekspert SEO' : 'SEO Expert'}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-1">
@@ -173,7 +188,7 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                                         "p-2 rounded-full transition",
                                         showSettings ? "bg-cyan-500/20 text-cyan-400" : "hover:bg-slate-700 text-slate-400 hover:text-white"
                                     )}
-                                    title="Ustawienia klucza API"
+                                    title={lang === 'pl' ? "Ustawienia klucza API" : "API Key Settings"}
                                 >
                                     <Send className="w-5 h-5 rotate-90" /> {/* Simulating settings icon with send rotated */}
                                 </button>
@@ -191,16 +206,18 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                     {showSettings && (
                         <div className="absolute inset-0 z-20 bg-slate-900/95 backdrop-blur-sm p-6 flex flex-col justify-center gap-4">
                             <div className="text-center mb-4">
-                                <h4 className="text-lg font-bold text-white mb-2">Twój Klucz Gemini API</h4>
+                                <h4 className="text-lg font-bold text-white mb-2">{lang === 'pl' ? 'Twój Klucz Gemini API' : 'Your Gemini API Key'}</h4>
                                 <p className="text-xs text-slate-400">
-                                    W wersji Desktop używasz własnego klucza, aby nie mieć limitów zapytań.
+                                    {lang === 'pl'
+                                        ? 'W wersji Desktop używasz własnego klucza, aby nie mieć limitów zapytań.'
+                                        : 'In the Desktop version, you use your own key to avoid query limits.'}
                                 </p>
                             </div>
                             <input
                                 type="password"
                                 value={localApiKey}
                                 onChange={(e) => setLocalApiKey(e.target.value)}
-                                placeholder="Wklej klucz API (AIza...)"
+                                placeholder={lang === 'pl' ? "Wklej klucz API (AIza...)" : "Paste API Key (AIza...)"}
                                 className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                             />
                             <div className="flex gap-2">
@@ -208,13 +225,13 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                                     onClick={() => saveApiKey(localApiKey)}
                                     className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-cyan-900/20"
                                 >
-                                    Zapisz Klucz
+                                    {lang === 'pl' ? 'Zapisz Klucz' : 'Save Key'}
                                 </button>
                                 <button
                                     onClick={() => setShowSettings(false)}
                                     className="px-6 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl transition"
                                 >
-                                    Anuluj
+                                    {lang === 'pl' ? 'Anuluj' : 'Cancel'}
                                 </button>
                             </div>
                             <p className="text-[10px] text-slate-500 text-center mt-4 uppercase">
@@ -223,12 +240,12 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                         </div>
                     ) || (isDesktop && !localApiKey && !messages.length) && (
                         <div className="absolute inset-x-4 top-20 z-10 p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl text-center">
-                            <p className="text-xs text-cyan-200 mb-3">Wymagany klucz API do działania w wersji Desktop.</p>
+                            <p className="text-xs text-cyan-200 mb-3">{lang === 'pl' ? 'Wymagany klucz API do działania w wersji Desktop.' : 'API Key required for Desktop version.'}</p>
                             <button
                                 onClick={() => setShowSettings(true)}
                                 className="text-[10px] font-black uppercase tracking-widest text-white bg-cyan-600 px-4 py-2 rounded-full hover:bg-cyan-500 transition"
                             >
-                                Skonfiguruj Klucz
+                                {lang === 'pl' ? 'Skonfiguruj Klucz' : 'Configure Key'}
                             </button>
                         </div>
                     )}
@@ -238,7 +255,11 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                         {messages.length === 0 && (
                             <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
                                 <MessageSquare className="w-12 h-12 mb-4 opacity-20" />
-                                <p className="text-sm">Zadaj mi pytanie na temat wyników tej podstrony. Chętnie doradzę, jak poprawić parametry!</p>
+                                <p className="text-sm">
+                                    {lang === 'pl'
+                                        ? 'Zadaj mi pytanie na temat wyników tej podstrony. Chętnie doradzę, jak poprawić parametry!'
+                                        : 'Ask me a question about this page\'s results. I\'d love to advise on how to improve parameters!'}
+                                </p>
                             </div>
                         )}
                         {messages.map((m, i) => (
@@ -266,7 +287,7 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                                     <Loader2 className="w-4 h-4 animate-spin" />
                                 </div>
                                 <div className="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 text-slate-400 text-sm">
-                                    Gemini myśli...
+                                    {lang === 'pl' ? 'Gemini myśli...' : 'Gemini is thinking...'}
                                 </div>
                             </div>
                         )}
@@ -283,7 +304,7 @@ export function GeminiChat({ context, isOpen, onClose }: GeminiChatProps) {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Zadaj pytanie..."
+                                placeholder={lang === 'pl' ? "Zadaj pytanie..." : "Ask a question..."}
                                 className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-white placeholder-slate-500"
                             />
                             <button

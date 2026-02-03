@@ -16,5 +16,10 @@ yarn-error.log*
 .vscode
 *.swp
 *.swo
+dist
+release
+*.dmg
+*.exe
+*.zip
 .DS_Store
 apple-app-site-association
