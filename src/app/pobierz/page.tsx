@@ -100,7 +100,7 @@ export default function DownloadPage() {
                     <ul className="text-left space-y-4 mb-8">
                         {[
                             "Wymagany macOS 11.0 Big Sur lub nowszy",
-                            "Wsparcie dla procesorów Apple Silicon (M1/M2/M3) oraz Intel",
+                            "Wsparcie dla procesorów Apple Silicon (M1/M2/M3)",
                             "Wymaga własnego klucza Gemini API (dostępny bezpłatnie w Google AI Studio)",
                             "Aplikacja sama powiadomi Cię o dostępności nowych aktualizacji"
                         ].map((item, i) => (
