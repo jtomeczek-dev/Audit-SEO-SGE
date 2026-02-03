@@ -401,7 +401,7 @@ export default function Home() {
                                 Audyt SEO i AI v1.0.0
                             </span>
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gradient">
-                                Optymalizacja dla AI i Ludzi
+                                Analiza dla AI i Ludzi
                             </h1>
                             <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
                                 Pobierz zaawansowany raport SEO, Performance i AI Overview (SGE).
