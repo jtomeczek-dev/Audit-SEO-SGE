@@ -117,8 +117,16 @@ export default function DownloadPage() {
 
                 {/* Footer */}
                 <footer className="mt-32 py-8 border-t border-slate-900 text-center">
-                    <p className="text-slate-600 text-sm">
-                        Juliusz Tomeczek &copy; {new Date().getFullYear()} • Audyt SEO i SGE jest projektem Open Source
+                    <p className="text-slate-500 text-sm">
+                        Juliusz Tomeczek &copy; {new Date().getFullYear()} • w ramach projektu{" "}
+                        <a
+                            href="https://aiforeveryone.blog"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-cyan-500 hover:text-cyan-400 font-medium transition-colors"
+                        >
+                            AIforEveryone.blog
+                        </a>
                     </p>
                 </footer>
             </div>
