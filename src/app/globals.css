@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', sans-serif;
+}
+
+@theme {
+  /* Override default Tailwind v4 wide-gamut colors with HEX for html2canvas compatibility */
+  --color-slate-50: #f8fafc;
+  --color-slate-200: #e2e8f0;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+
+  --color-purple-400: #c084fc;
+  --color-purple-500: #a855f7;
+  --color-purple-600: #9333ea;
+
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+
+  --color-premium-purple: #8B5CF6;
+  --color-premium-cyan: #06B6D4;
+  --color-premium-dark: #0F172A;
+  --color-premium-glass: rgba(15, 23, 42, 0.7);
+}
+
+.glass-morphism {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
