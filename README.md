@@ -52,4 +52,4 @@ Aplikacja jest zaprojektowana z myślą o bezpieczeństwie:
 
 ## 📝 Autor
 
-Projekt stworzony przez **JT CONSULTING** w ramach projektu [AIforEveryone.blog](https://aiforeveryone.blog).
+Projekt stworzony przez **Juliusz Tomeczek** w ramach projektu [AIforEveryone.blog](https://aiforeveryone.blog).
