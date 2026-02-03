@@ -266,7 +266,7 @@ export default function Home() {
             const dateStr = lang === 'pl' ? new Date().toLocaleDateString('pl-PL') : new Date().toLocaleDateString('en-US');
             pdf.text(`${t.pdfDate}: ${dateStr}`, margin, pageHeight - 35);
             pdf.text(t.pdfGeneratedBy, margin, pageHeight - 30);
-            pdf.text(`Wersja aplikacji: v1.1.6`, margin, pageHeight - 25);
+            pdf.text(`Wersja aplikacji: v1.2.0`, margin, pageHeight - 25);
 
             // --- STRONA 2: PODSUMOWANIE MENEDŻERSKIE ---
             addNewPage();

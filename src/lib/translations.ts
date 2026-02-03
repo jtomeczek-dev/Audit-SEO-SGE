@@ -53,7 +53,7 @@ export const translations = {
         dlHeroTitle: "Analizuj bez limitów na swoim Macu",
         dlHeroDesc: "Pobierz natywną aplikację Audyt SEO i SGE. Szybsza analiza, brak limitów zapytań i pełna prywatność danych dzięki pracy z własnym kluczem API.",
         dlButton: "Pobierz dla macOS (.dmg)",
-        dlUpdateInfo: "Bezpłatna aktualizacja do v1.0.0",
+        dlUpdateInfo: "Bezpłatna aktualizacja do v1.2.0",
         dlFeature1Title: "Brak Limitów",
         dlFeature1Desc: "Wersja desktopowa pozwala na nielimitowaną liczbę audytów dzięki użyciu własnego klucza Gemini.",
         dlFeature2Title: "Prywatność",
@@ -65,7 +65,7 @@ export const translations = {
         dlInfo2: "Wsparcie dla procesorów Apple Silicon (M1/M2/M3)",
         dlInfo3: "Wymaga własnego klucza Gemini API (dostępny bezpłatnie w Google AI Studio)",
         dlInfo4: "Aplikacja sama powiadomi Cię o dostępności nowych aktualizacji",
-        dlStableVersion: "Aktualna wersja stabilna: v1.0.0",
+        dlStableVersion: "Aktualna wersja stabilna: v1.2.0",
 
         // Gemini System Instruction
         geminiSystem: (context: string) => `Jesteś ekspertem ds. SEO oraz AI Readiness (SGE). Twoim zadaniem jest pomóc użytkownikowi zrozumieć wyniki audytu jego strony internetowej i doradzić, jak może poprawić parametry analizowane przez aplikację.
@@ -173,7 +173,7 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
         dlHeroTitle: "Analyze without limits on your Mac",
         dlHeroDesc: "Download the native SEO & SGE application. Faster analysis, no query limits, and full data privacy by using your own API key.",
         dlButton: "Download for macOS (.dmg)",
-        dlUpdateInfo: "Free update to v1.1.6",
+        dlUpdateInfo: "Free update to v1.2.0",
         dlFeature1Title: "No Limits",
         dlFeature1Desc: "The desktop version allows for an unlimited number of audits by using your own Gemini key.",
         dlFeature2Title: "Privacy",
@@ -185,7 +185,7 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
         dlInfo2: "Apple Silicon (M1/M2/M3) support",
         dlInfo3: "Requires your own Gemini API key (available for free in Google AI Studio)",
         dlInfo4: "The app will notify you when new updates are available",
-        dlStableVersion: "Current stable version: v1.1.6",
+        dlStableVersion: "Current stable version: v1.2.0",
 
         // Gemini System Instruction
         geminiSystem: (context: string) => `You are an expert in SEO and AI Readiness (SGE). Your task is to help the user understand the audit results of their website and advise on how they can improve the parameters analyzed by the application.
