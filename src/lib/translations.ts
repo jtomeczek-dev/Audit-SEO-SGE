@@ -73,7 +73,46 @@ export const translations = {
 Kontekst audytu:
 ${context}
 
-Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych zawartych w kontekście. Jeśli użytkownik pyta o coś poza zakresem audytu, dyplomatycznie skieruj go z powrotem na tematy związane z SEO i optymalizacją pod modele AI.`
+Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych zawartych w kontekście. Jeśli użytkownik pyta o coś poza zakresem audytu, dyplomatycznie skieruj go z powrotem na tematy związane z SEO i optymalizacją pod modele AI.`,
+
+        // PDF Report
+        pdfHeader: "Opracowanie Biznesowe - Audyt SEO & AI",
+        pdfDomain: "Domena",
+        pdfDate: "Data opracowania",
+        pdfGeneratedBy: "Wygenerowano przez: Audyt SEO i SGE",
+        pdfPage: "Strona",
+        pdfCoverSubtitle: "Analiza biznesowa i techniczna serwisu",
+        pdfSummaryTitle: "1. Podsumowanie Menedżerskie",
+        pdfSummaryDescSite: "Niniejsze opracowanie stanowi kompleksową analizę widoczności serwisu pod kątem tradycyjnych wyszukiwarek (SEO) oraz systemów nowej generacji opartych na AI (Google SGE). Audyt obejmuje ocenę fundamentów technicznych, wydajności oraz semantycznego przygotowania treści.",
+        pdfSummaryDescPage: (url: string) => `Szczegółowa analiza podstrony ${url} pod kątem optymalizacji technicznej oraz czytelności dla modeli językowych AI.`,
+        pdfMetricSeo: "SEO FUNDAMENTY",
+        pdfMetricPerf: "WYDAJNOŚĆ",
+        pdfMetricAi: "SGE / AI READINESS",
+        pdfRecTitle: "2. Kluczowe Rekomendacje",
+        pdfRecPriority: "Priorytet",
+        pdfRecLabel: "Zalecenie",
+        pdfRecDesc: "Opis",
+        pdfRecHigh: "WYSOKI",
+        pdfRecMedium: "ŚREDNI",
+        pdfRecLow: "NISKI",
+        pdfTableTitle: "3. Wykaz Przeanalizowanych Podstron",
+        pdfTableUrl: "Adres URL",
+        pdfTableSeo: "SEO",
+        pdfTablePerf: "Wyd.",
+        pdfTableAi: "SGE",
+        pdfTableErrors: "Błędy",
+        pdfDetailsTitle: "3. Analiza Techniczna Strony",
+        pdfDetailsMetaTitle: "Tytuł strony (TitleTag):",
+        pdfDetailsMetaDesc: "Opis meta (Description):",
+        pdfDetailsH1: "Nagłówki H1:",
+        pdfDetailsSchema: "Dane strukturalne (Schema):",
+        pdfDetailsStats: "Statystyki treści:",
+        pdfDetailsWordCount: "Liczba słów",
+        pdfDetailsLists: "Liczba list",
+        pdfDetailsQuestions: "Liczba pytań",
+        pdfNoDesc: "Brak opisu meta.",
+        pdfNoH1: "Nie znaleziono nagłówka H1.",
+        pdfNoSchema: "Brak danych strukturalnych."
     },
     en: {
         title: "SEO & SGE Auditor",
@@ -88,7 +127,7 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
         downloadPdf: "Download PDF",
         downloadMac: "Download for macOS",
         backToAudit: "Back to online analysis",
-        footer: "Juliusz Tomeczek &copy; {year} • part of the",
+        footer: "Juliusz Tomeczek &copy; {year} • part of the project",
 
         // Scores
         scoreGeneral: "Overall Score",
@@ -127,7 +166,7 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
         dlHeroTitle: "Analyze without limits on your Mac",
         dlHeroDesc: "Download the native SEO & SGE application. Faster analysis, no query limits, and full data privacy by using your own API key.",
         dlButton: "Download for macOS (.dmg)",
-        dlUpdateInfo: "Free update to v1.0.0",
+        dlUpdateInfo: "Free update to v1.1.6",
         dlFeature1Title: "No Limits",
         dlFeature1Desc: "The desktop version allows for an unlimited number of audits by using your own Gemini key.",
         dlFeature2Title: "Privacy",
@@ -139,7 +178,7 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
         dlInfo2: "Apple Silicon (M1/M2/M3) support",
         dlInfo3: "Requires your own Gemini API key (available for free in Google AI Studio)",
         dlInfo4: "The app will notify you when new updates are available",
-        dlStableVersion: "Current stable version: v1.0.0",
+        dlStableVersion: "Current stable version: v1.1.6",
 
         // Gemini System Instruction
         geminiSystem: (context: string) => `You are an expert in SEO and AI Readiness (SGE). Your task is to help the user understand the audit results of their website and advise on how they can improve the parameters analyzed by the application.
@@ -147,6 +186,45 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
 Audit Context:
 ${context}
 
-Respond specifically, professionally, and in English. Focus on the data contained in the context. If the user asks about something outside the audit scope, diplomatically direct them back to SEO and AI model optimization topics.`
+Respond specifically, professionally, and in English. Focus on the data contained in the context. If the user asks about something outside the audit scope, diplomatically direct them back to SEO and AI model optimization topics.`,
+
+        // PDF Report
+        pdfHeader: "Business Overview - SEO & AI Audit",
+        pdfDomain: "Domain",
+        pdfDate: "Analysis date",
+        pdfGeneratedBy: "Generated by: SEO & SGE Audit",
+        pdfPage: "Page",
+        pdfCoverSubtitle: "Business and technical analysis of the service",
+        pdfSummaryTitle: "1. Executive Summary",
+        pdfSummaryDescSite: "This document provides a comprehensive analysis of the website's visibility for traditional search engines (SEO) and next-generation AI-based systems (Google SGE). The audit involves assessing technical foundations, performance, and semantic content preparation.",
+        pdfSummaryDescPage: (url: string) => `Detailed analysis of the subpage ${url} in terms of technical optimization and readability for AI language models.`,
+        pdfMetricSeo: "SEO FOUNDATIONS",
+        pdfMetricPerf: "PERFORMANCE",
+        pdfMetricAi: "SGE / AI READINESS",
+        pdfRecTitle: "2. Key Recommendations",
+        pdfRecPriority: "Priority",
+        pdfRecLabel: "Requirement",
+        pdfRecDesc: "Description",
+        pdfRecHigh: "HIGH",
+        pdfRecMedium: "MEDIUM",
+        pdfRecLow: "LOW",
+        pdfTableTitle: "3. List of Analyzed Subpages",
+        pdfTableUrl: "URL Address",
+        pdfTableSeo: "SEO",
+        pdfTablePerf: "Perf.",
+        pdfTableAi: "SGE",
+        pdfTableErrors: "Errors",
+        pdfDetailsTitle: "3. Technical Analysis of the Page",
+        pdfDetailsMetaTitle: "Page title (TitleTag):",
+        pdfDetailsMetaDesc: "Meta description (Description):",
+        pdfDetailsH1: "H1 Headings:",
+        pdfDetailsSchema: "Structured data (Schema):",
+        pdfDetailsStats: "Content statistics:",
+        pdfDetailsWordCount: "Word count",
+        pdfDetailsLists: "List count",
+        pdfDetailsQuestions: "Question count",
+        pdfNoDesc: "No meta description found.",
+        pdfNoH1: "No H1 heading found.",
+        pdfNoSchema: "No structured data found."
     }
 };

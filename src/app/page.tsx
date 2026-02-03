@@ -209,8 +209,8 @@ export default function Home() {
             const addHeader = () => {
                 pdf.setFontSize(8);
                 pdf.setTextColor(150, 150, 150);
-                pdf.text("Opracowanie Biznesowe - Audyt SEO & AI", margin, 15);
-                pdf.text(`Domena: ${new URL(url).hostname}`, pageWidth - margin, 15, { align: "right" });
+                pdf.text(t.pdfHeader, margin, 15);
+                pdf.text(`${t.pdfDomain}: ${new URL(url).hostname}`, pageWidth - margin, 15, { align: "right" });
                 pdf.setDrawColor(240, 240, 240);
                 pdf.line(margin, 18, pageWidth - margin, 18);
             };
@@ -218,12 +218,20 @@ export default function Home() {
             const addFooter = (pageNum: number) => {
                 pdf.setFontSize(8);
                 pdf.setTextColor(150, 150, 150);
-                pdf.text(`Strona ${pageNum}`, pageWidth / 2, pageHeight - 10, { align: "center" });
+                pdf.text(`${t.pdfPage} ${pageNum}`, pageWidth / 2, pageHeight - 15, { align: "center" });
+                pdf.text(`${new Date().getFullYear()} © Juliusz Tomeczek • AIforEveryone.blog`, pageWidth / 2, pageHeight - 10, { align: "center" });
             };
 
             // --- STRONA TYTUŁOWA ---
             pdf.setFillColor(2, 6, 23); // Dark theme matching UI
             pdf.rect(0, 0, pageWidth, pageHeight, "F");
+
+            // Add logo
+            try {
+                pdf.addImage("/logo.png", "PNG", margin, 40, 30, 30);
+            } catch (e) {
+                console.warn("Logo not found for PDF", e);
+            }
 
             pdf.setTextColor(255, 255, 255);
             pdf.setFontSize(48);
@@ -237,7 +245,7 @@ export default function Home() {
 
             pdf.setFontSize(14);
             pdf.setFont("Roboto", "normal");
-            pdf.text("Analiza biznesowa i techniczna serwisu", margin, 145);
+            pdf.text(t.pdfCoverSubtitle, margin, 145);
 
             pdf.setFont("Roboto", "bold");
             pdf.setFontSize(24);
@@ -246,23 +254,23 @@ export default function Home() {
             pdf.setFontSize(10);
             pdf.setFont("Roboto", "normal");
             pdf.setTextColor(150, 150, 150);
-            pdf.text(`Data opracowania: ${new Date().toLocaleDateString('pl-PL')}`, margin, pageHeight - 30);
-            pdf.text("Wygenerowano przez: Audyt SEO i SGE", margin, pageHeight - 25);
+            const dateStr = lang === 'pl' ? new Date().toLocaleDateString('pl-PL') : new Date().toLocaleDateString('en-US');
+            pdf.text(`${t.pdfDate}: ${dateStr}`, margin, pageHeight - 35);
+            pdf.text(t.pdfGeneratedBy, margin, pageHeight - 30);
+            pdf.text(`Wersja aplikacji: v1.1.6`, margin, pageHeight - 25);
 
             // --- STRONA 2: PODSUMOWANIE MENEDŻERSKIE ---
             addNewPage();
             pdf.setTextColor(30, 41, 59);
             pdf.setFontSize(22);
             pdf.setFont("Roboto", "bold");
-            pdf.text("1. Podsumowanie Menedżerskie", margin, yPos);
+            pdf.text(t.pdfSummaryTitle, margin, yPos);
             yPos += 15;
 
             pdf.setFont("Roboto", "normal");
             pdf.setFontSize(11);
             pdf.setTextColor(71, 85, 105);
-            const summaryText = isSiteWide
-                ? "Niniejsze opracowanie stanowi kompleksową analizę widoczności serwisu pod kątem tradycyjnych wyszukiwarek (SEO) oraz systemów nowej generacji opartych na AI (Google SGE). Audyt obejmuje ocenę fundamentów technicznych, wydajności oraz semantycznego przygotowania treści."
-                : `Szczegółowa analiza podstrony ${url} pod kątem optymalizacji technicznej oraz czytelności dla modeli językowych AI.`;
+            const summaryText = isSiteWide ? t.pdfSummaryDescSite : t.pdfSummaryDescPage(url);
 
             const lines = pdf.splitTextToSize(summaryText, contentWidth);
             pdf.text(lines, margin, yPos);
@@ -287,9 +295,9 @@ export default function Home() {
                 pdf.text(`${value}%`, x, yPos + 30, { align: "center" });
             };
 
-            drawMetric("SEO FUNDAMENTY", scores.seo, margin + (contentWidth / 6));
-            drawMetric("WYDAJNOŚĆ", scores.performance, margin + (contentWidth / 2));
-            drawMetric("SGE / AI READINESS", scores.ai, margin + (contentWidth * 5 / 6));
+            drawMetric(t.pdfMetricSeo, scores.seo, margin + (contentWidth / 6));
+            drawMetric(t.pdfMetricPerf, scores.performance, margin + (contentWidth / 2));
+            drawMetric(t.pdfMetricAi, scores.ai, margin + (contentWidth * 5 / 6));
 
             yPos += 60;
 
@@ -297,7 +305,7 @@ export default function Home() {
             pdf.setFontSize(18);
             pdf.setTextColor(30, 41, 59);
             pdf.setFont("Roboto", "bold");
-            pdf.text("2. Kluczowe Rekomendacje", margin, yPos);
+            pdf.text(t.pdfRecTitle, margin, yPos);
             yPos += 12;
 
             const recommendations = 'isSiteWide' in report ? report.allRecommendations.slice(0, 10) : report.recommendations;
@@ -306,9 +314,9 @@ export default function Home() {
                 startY: yPos,
                 margin: { left: margin, right: margin },
                 styles: { font: "Roboto", fontStyle: "normal" },
-                head: [['Priorytet', 'Zalecenie', 'Opis']],
+                head: [[t.pdfRecPriority, t.pdfRecLabel, t.pdfRecDesc]],
                 body: recommendations.map(r => [
-                    r.priority === 'high' ? 'WYSOKI' : r.priority === 'medium' ? 'ŚREDNI' : 'NISKI',
+                    r.priority === 'high' ? t.pdfRecHigh : r.priority === 'medium' ? t.pdfRecMedium : t.pdfRecLow,
                     r.title,
                     r.description
                 ]),
@@ -330,14 +338,14 @@ export default function Home() {
                 addNewPage();
                 pdf.setFontSize(18);
                 pdf.setFont("Roboto", "bold");
-                pdf.text("3. Wykaz Przeanalizowanych Podstron", margin, yPos);
+                pdf.text(t.pdfTableTitle, margin, yPos);
                 yPos += 10;
 
                 autoTable(pdf, {
                     startY: yPos,
                     margin: { left: margin, right: margin },
                     styles: { font: "Roboto", fontStyle: "normal" },
-                    head: [['Adres URL', 'SEO', 'Wyd.', 'SGE', 'Błędy']],
+                    head: [[t.pdfTableUrl, t.pdfTableSeo, t.pdfTablePerf, t.pdfTableAi, t.pdfTableErrors]],
                     body: report.pages.map(p => [
                         p.url.substring(0, 80) + (p.url.length > 80 ? '...' : ''),
                         `${p.scores.seo}%`,
@@ -359,7 +367,7 @@ export default function Home() {
                 addNewPage();
                 pdf.setFontSize(18);
                 pdf.setFont("Roboto", "bold");
-                pdf.text("3. Analiza Techniczna Strony", margin, yPos);
+                pdf.text(t.pdfDetailsTitle, margin, yPos);
                 yPos += 15;
 
                 const addDetailSection = (title: string, data: any) => {
@@ -377,11 +385,11 @@ export default function Home() {
                     yPos += detailLines.length * 5 + 10;
                 };
 
-                addDetailSection("Tytuł strony (TitleTag):", report.title);
-                addDetailSection("Opis meta (Description):", report.description || "Brak opisu meta.");
-                addDetailSection("Nagłówki H1:", report.headings.h1.join(", ") || "Nie znaleziono nagłówka H1.");
-                addDetailSection("Dane strukturalne (Schema):", report.schema.types.join(", ") || "Brak danych strukturalnych.");
-                addDetailSection("Statystyki treści:", `Liczba słów: ${report.content.wordCount} | Liczba list: ${report.content.lists} | Liczba pytań: ${report.content.questions}`);
+                addDetailSection(t.pdfDetailsMetaTitle, report.title);
+                addDetailSection(t.pdfDetailsMetaDesc, report.description || t.pdfNoDesc);
+                addDetailSection(t.pdfDetailsH1, report.headings.h1.join(", ") || t.pdfNoH1);
+                addDetailSection(t.pdfDetailsSchema, report.schema.types.join(", ") || t.pdfNoSchema);
+                addDetailSection(t.pdfDetailsStats, `${t.pdfDetailsWordCount}: ${report.content.wordCount} | ${t.pdfDetailsLists}: ${report.content.lists} | ${t.pdfDetailsQuestions}: ${report.content.questions}`);
             }
 
             // Final page numbering
@@ -906,7 +914,7 @@ export default function Home() {
                     </AnimatePresence >
                     <footer className="mt-20 py-8 border-t border-slate-800/50 text-center">
                         <p className="text-slate-500 text-sm">
-                            Juliusz Tomeczek &copy; {new Date().getFullYear()} {lang === 'pl' ? 'w ramach projektu' : 'as part of the project'}{" "}
+                            Juliusz Tomeczek &copy; {new Date().getFullYear()} • {lang === 'pl' ? 'Audyt SEO i SGE w ramach projektu' : 'SEO & SGE Audit as part of the project'}{" "}
                             <a
                                 href="https://aiforeveryone.blog"
                                 target="_blank"

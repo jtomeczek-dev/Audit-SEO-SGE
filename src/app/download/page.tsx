@@ -144,12 +144,12 @@ export default function DownloadPage() {
                 {/* Footer */}
                 <footer className="mt-32 py-8 border-t border-slate-900 text-center">
                     <p className="text-slate-500 text-sm">
-                        Juliusz Tomeczek &copy; {new Date().getFullYear()} • {lang === "pl" ? "w ramach projektu" : "as part of the project"}{" "}
+                        Juliusz Tomeczek &copy; {new Date().getFullYear()} • {lang === 'pl' ? 'Audyt SEO i SGE w ramach projektu' : 'SEO & SGE Audit as part of the project'}{" "}
                         <a
                             href="https://aiforeveryone.blog"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-cyan-500 hover:text-cyan-400 font-medium transition-colors"
+                            className="text-cyan-500 hover:text-cyan-400 font-medium transition-colors border-b border-cyan-500/20 hover:border-cyan-400"
                         >
                             AIforEveryone.blog
                         </a>
