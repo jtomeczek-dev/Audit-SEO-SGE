@@ -52,6 +52,7 @@ export interface AuditResult {
     schema: {
         types: string[];
         raw: string[];
+        suggestedSchema?: string;
     };
     content: {
         lists: number;
@@ -160,6 +161,17 @@ export async function analyzeUrl(url: string): Promise<AuditResult> {
         })
         .get();
 
+    let suggestedSchema;
+    if (schemaTypes.length === 0) {
+        suggestedSchema = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": title,
+            "description": description,
+            "url": url
+        }, null, 2);
+    }
+
     const lists = $('ul, ol').length;
     const bodyText = $('body').text() || "";
     const questions = (bodyText.match(/\?/g) || []).length;
@@ -230,7 +242,8 @@ export async function analyzeUrl(url: string): Promise<AuditResult> {
         },
         schema: {
             types: schemaTypes,
-            raw: schemaRaw
+            raw: schemaRaw,
+            suggestedSchema
         },
         content: {
             lists,
@@ -299,7 +312,7 @@ function generateRecommendations(data: any, seoChecks: ScoreCheck[], aiChecks: S
 
     aiChecks.filter(c => !c.passed).forEach(c => {
         if (c.label.includes("Schema")) {
-            recs.push({ title: "Dodaj Schema.org", description: "Google AI Overviews (SGE) polega na danych strukturalnych do generowania podsumowań.", priority: "high", category: "AI" });
+            recs.push({ title: "Dodaj Schema.org", description: "Google AI Overviews (SGE) polega na danych strukturalnych. Skorzystaj z sugerowanego kodu JSON-LD w szczegółach analizy technicznej.", priority: "high", category: "AI" });
         } else if (c.label.includes("Listy")) {
             recs.push({ title: "Zwiększ liczbę list", description: "AI uwielbia ustrukturyzowane informacje. Użyj formatowania <ul>/<li> dla ważnych punktów.", priority: "low", category: "AI" });
         } else if (c.label.includes("pytań")) {

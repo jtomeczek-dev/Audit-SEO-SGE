@@ -112,7 +112,14 @@ Odpowiadaj konkretnie, profesjonalnie i w języku polskim. Skup się na danych z
         pdfDetailsQuestions: "Liczba pytań",
         pdfNoDesc: "Brak opisu meta.",
         pdfNoH1: "Nie znaleziono nagłówka H1.",
-        pdfNoSchema: "Brak danych strukturalnych."
+        pdfNoSchema: "Brak danych strukturalnych.",
+
+        // Schema Generator
+        suggestedSchemaTitle: "Sugerowana struktura danych (JSON-LD)",
+        suggestedSchemaDesc: "Twoja strona nie posiada danych strukturalnych. Skopiuj poniższy kod i wklej go w sekcji <head> swojej witryny, aby poprawić widoczność w AI Overviews.",
+        copyCode: "Kopiuj kod",
+        copying: "Kopiowanie...",
+        copied: "Skopiowano!"
     },
     en: {
         title: "SEO & SGE Auditor",
@@ -225,6 +232,13 @@ Respond specifically, professionally, and in English. Focus on the data containe
         pdfDetailsQuestions: "Question count",
         pdfNoDesc: "No meta description found.",
         pdfNoH1: "No H1 heading found.",
-        pdfNoSchema: "No structured data found."
+        pdfNoSchema: "No structured data found.",
+
+        // Schema Generator
+        suggestedSchemaTitle: "Suggested Structured Data (JSON-LD)",
+        suggestedSchemaDesc: "Your page is missing structured data. Copy the code below and paste it into the <head> section of your website to improve visibility in AI Overviews.",
+        copyCode: "Copy Code",
+        copying: "Copying...",
+        copied: "Copied!"
     }
 };

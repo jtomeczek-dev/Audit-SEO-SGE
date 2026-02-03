@@ -27,6 +27,7 @@ export default function Home() {
     const [sortConfig, setSortConfig] = useState<{ key: 'url' | 'seo' | 'ai' | 'performance' | 'errors', direction: 'asc' | 'desc' } | null>(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [lang, setLang] = useState<Locale>("pl");
+    const [copyStatus, setCopyStatus] = useState<"idle" | "copying" | "copied">("idle");
 
     // Translation helper
     const t = translations[lang];
@@ -178,6 +179,14 @@ export default function Home() {
                 detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
         }
+    };
+
+    const handleCopySchema = (code: string) => {
+        setCopyStatus("copying");
+        navigator.clipboard.writeText(code).then(() => {
+            setCopyStatus("copied");
+            setTimeout(() => setCopyStatus("idle"), 2000);
+        });
     };
 
     const handleExport = async () => {
@@ -332,6 +341,40 @@ export default function Home() {
             });
 
             yPos = (pdf as any).lastAutoTable.finalY + 20;
+
+            // --- SUGGESTED SCHEMA (IF MISSING) ---
+            if (report && !('isSiteWide' in report) && report.schema.suggestedSchema) {
+                if (yPos > pageHeight - 60) {
+                    addNewPage();
+                }
+
+                pdf.setFontSize(14);
+                pdf.setFont("Roboto", "bold");
+                pdf.setTextColor(124, 58, 237); // Purple
+                pdf.text(t.suggestedSchemaTitle, margin, yPos);
+                yPos += 8;
+
+                pdf.setFontSize(9);
+                pdf.setFont("Roboto", "normal");
+                pdf.setTextColor(71, 85, 105);
+                const schemaLines = pdf.splitTextToSize(t.suggestedSchemaDesc, contentWidth);
+                pdf.text(schemaLines, margin, yPos);
+                yPos += schemaLines.length * 5 + 5;
+
+                pdf.setFillColor(241, 245, 249);
+                const codeLines = pdf.splitTextToSize(report.schema.suggestedSchema, contentWidth - 10);
+                const codeHeight = codeLines.length * 4 + 10;
+
+                if (yPos + codeHeight > pageHeight - margin) {
+                    addNewPage();
+                }
+
+                pdf.roundedRect(margin, yPos, contentWidth, codeHeight, 2, 2, "F");
+                pdf.setFontSize(8);
+                pdf.setTextColor(51, 65, 85);
+                pdf.text(codeLines, margin + 5, yPos + 7);
+                yPos += codeHeight + 15;
+            }
 
             // --- STRONA 3+: SZCZEGÓŁY / LISTA PODSTRON ---
             if ('isSiteWide' in report) {
@@ -841,6 +884,38 @@ export default function Home() {
                                                             </motion.div>
                                                         ))}
                                                     </div>
+                                                    {/* Suggestion for Schema */}
+                                                    {report && !('isSiteWide' in report) && report.schema.suggestedSchema && selectedDetail.label.toLowerCase().includes('strukturaln') && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: 10 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            className="mt-10 p-6 bg-slate-900/50 rounded-2xl border border-purple-500/30 space-y-4 relative overflow-hidden group"
+                                                        >
+                                                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                                                <Layers className="w-16 h-16 text-purple-400" />
+                                                            </div>
+                                                            <div className="relative z-10">
+                                                                <div className="flex items-center justify-between mb-2">
+                                                                    <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                                                                        <Sparkles className="w-5 h-5 text-purple-400" /> {t.suggestedSchemaTitle}
+                                                                    </h4>
+                                                                    <button
+                                                                        onClick={() => handleCopySchema(report.schema.suggestedSchema!)}
+                                                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${copyStatus === 'copied' ? 'bg-emerald-500 text-white' : 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/20'}`}
+                                                                    >
+                                                                        {copyStatus === 'copied' ? <CheckCircle2 className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+                                                                        {copyStatus === 'idle' ? t.copyCode : copyStatus === 'copying' ? t.copying : t.copied}
+                                                                    </button>
+                                                                </div>
+                                                                <p className="text-sm text-slate-400 mb-6 max-w-2xl leading-relaxed">
+                                                                    {t.suggestedSchemaDesc}
+                                                                </p>
+                                                                <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 font-mono text-xs text-blue-300 overflow-x-auto max-h-60 scrollbar-thin scrollbar-thumb-slate-800">
+                                                                    <pre>{report.schema.suggestedSchema}</pre>
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
                                                 </motion.section>
                                             )}
                                         </AnimatePresence>
