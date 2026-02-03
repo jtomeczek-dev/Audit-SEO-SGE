@@ -206,6 +206,24 @@ export async function analyzeUrl(url: string): Promise<AuditResult> {
                 reason: d.classes.includes('hidden') || d.classes.includes('sr-only') ? "Ukryty (np. dla czytników)" : "Widoczny"
             }))
         },
+        title_tag: {
+            type: "list",
+            label: "Analiza Tagu Title",
+            items: [{
+                value: title || "Brak tytułu",
+                reason: title.length >= 30 && title.length <= 65 ? "Optymalna długość" : "Wymaga poprawy (30-65 znaków)",
+                context: `Długość: ${title.length} znaków`
+            }]
+        },
+        meta_description: {
+            type: "list",
+            label: "Analiza Meta Description",
+            items: [{
+                value: description || "Brak opisu meta",
+                reason: description.length >= 120 && description.length <= 160 ? "Optymalna długość" : description.length > 0 ? "Wymaga optymalizacji (120-160 znaków)" : "Błąd krytyczny",
+                context: `Długość: ${description.length} znaków`
+            }]
+        },
         schema: {
             type: "list",
             label: "Wykryte typy danych strukturalnych",

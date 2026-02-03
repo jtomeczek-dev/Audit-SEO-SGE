@@ -801,6 +801,20 @@ export default function Home() {
                                                         onClick={() => handleDrillDown('h1')}
                                                     />
                                                     <AuditDetailItem
+                                                        label={t.metaTitle}
+                                                        value={report.title.length > 0 ? (lang === 'pl' ? "Zdefiniowany" : "Defined") : (lang === 'pl' ? "Brak" : "Missing")}
+                                                        status={report.title.length >= 30 && report.title.length <= 65 ? "success" : "warning"}
+                                                        description={lang === 'pl' ? "Kliknij, aby przeanalizować tag title" : "Click to analyze title tag"}
+                                                        onClick={() => handleDrillDown('title_tag')}
+                                                    />
+                                                    <AuditDetailItem
+                                                        label={t.metaDesc}
+                                                        value={report.description.length > 0 ? (lang === 'pl' ? "Zdefiniowany" : "Defined") : (lang === 'pl' ? "Brak" : "Missing")}
+                                                        status={report.description.length > 0 ? (report.description.length >= 120 && report.description.length <= 160 ? "success" : "warning") : "error"}
+                                                        description={lang === 'pl' ? "Szczegółowa analiza opisu" : "Detailed description analysis"}
+                                                        onClick={() => handleDrillDown('meta_description')}
+                                                    />
+                                                    <AuditDetailItem
                                                         label={t.schema}
                                                         value={report.schema.types.length > 0 ? `${report.schema.types.length} ${lang === 'pl' ? "Typów" : "Types"}` : "None"}
                                                         status={report.schema.types.length > 0 ? "success" : "error"}
