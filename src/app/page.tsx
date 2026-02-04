@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ChevronUp, ChevronDown, Search, Globe, Layout, ListChecks, AlertCircle, Sparkles, FileText, Download, Zap, Shield, ArrowRight, Layers, BarChart3, Clock, CheckCircle2, XCircle, Info, Maximize2, ExternalLink, Loader2, LayoutGrid, ListTree, Monitor, Image as ImageIcon } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Search, Globe, Layout, ListChecks, AlertCircle, Sparkles, FileText, Download, Zap, Shield, ArrowRight, Layers, BarChart3, Clock, CheckCircle2, XCircle, Info, Maximize2, ExternalLink, Loader2, LayoutGrid, ListTree, Monitor, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -28,6 +28,8 @@ export default function Home() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [lang, setLang] = useState<Locale>("pl");
     const [copyStatus, setCopyStatus] = useState<"idle" | "copying" | "copied">("idle");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     // Translation helper
     const t = translations[lang];
@@ -53,6 +55,7 @@ export default function Home() {
             direction = 'desc';
         }
         setSortConfig({ key, direction });
+        setCurrentPage(1);
     };
 
     const getSortedPages = (pages: any[]) => {
@@ -96,6 +99,7 @@ export default function Home() {
         setError(null);
         setReport(null);
         setSelectedDetail(null);
+        setCurrentPage(1);
         setProgress({ current: 0, total: 0, message: "Inicjowanie..." });
 
         try {
@@ -266,7 +270,7 @@ export default function Home() {
             const dateStr = lang === 'pl' ? new Date().toLocaleDateString('pl-PL') : new Date().toLocaleDateString('en-US');
             pdf.text(`${t.pdfDate}: ${dateStr}`, margin, pageHeight - 35);
             pdf.text(t.pdfGeneratedBy, margin, pageHeight - 30);
-            pdf.text(`Wersja aplikacji: v1.2.0`, margin, pageHeight - 25);
+            pdf.text(`Wersja aplikacji: v1.3.0`, margin, pageHeight - 25);
 
             // --- STRONA 2: PODSUMOWANIE MENEDŻERSKIE ---
             addNewPage();
@@ -490,7 +494,7 @@ export default function Home() {
                                 <div className="w-4 h-4 rounded px-0.5 bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden">
                                     <img src="/icon.png" alt="Logo" className="w-full h-full object-contain" />
                                 </div>
-                                {t.title} v1.1.5
+                                {t.title} v1.3.0
                             </div>
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-gradient">
                                 {t.subtitle}
@@ -663,107 +667,180 @@ export default function Home() {
 
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                     <div className="lg:col-span-8 space-y-8">
-                                        {('isSiteWide' in report) ? (
-                                            <section className="glass-morphism p-8 rounded-3xl">
-                                                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                                                    <LayoutGrid className="text-cyan-400 w-6 h-6" /> {lang === 'pl' ? 'Lista Przeskanowanych Podstron' : 'Scanned Pages List'}
-                                                </h3>
-                                                <div className="overflow-x-auto">
-                                                    <table className="w-full text-left">
-                                                        <thead>
-                                                            <tr className="border-b border-slate-800">
-                                                                <th
-                                                                    className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-cyan-400 transition"
-                                                                    onClick={() => handleSort('url')}
-                                                                >
-                                                                    <div className="flex items-center gap-1">
-                                                                        {lang === 'pl' ? 'Adres URL' : 'URL Address'}
-                                                                        {sortConfig?.key === 'url' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                                        {report && ('isSiteWide' in report) ? (
+                                            (() => {
+                                                const sortedPages = getSortedPages(report.pages);
+                                                const totalPages = Math.ceil(sortedPages.length / itemsPerPage);
+                                                const currentSet = sortedPages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+                                                return (
+                                                    <section className="glass-morphism p-8 rounded-3xl">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                                            <h3 className="text-2xl font-bold flex items-center gap-3">
+                                                                <LayoutGrid className="text-cyan-400 w-6 h-6" /> {lang === 'pl' ? 'Lista Przeskanowanych Podstron' : 'Scanned Pages List'}
+                                                            </h3>
+
+                                                            <div className="flex items-center gap-3 bg-slate-900/50 p-1.5 rounded-xl border border-slate-800">
+                                                                <span className="text-[10px] font-bold uppercase text-slate-500 ml-2">{lang === 'pl' ? 'Pokaż' : 'Show'}:</span>
+                                                                {[10, 25, 50, 100].map(num => (
+                                                                    <button
+                                                                        key={num}
+                                                                        onClick={() => {
+                                                                            setItemsPerPage(num);
+                                                                            setCurrentPage(1);
+                                                                        }}
+                                                                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${itemsPerPage === num ? 'bg-cyan-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                                                                    >
+                                                                        {num}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-left">
+                                                                <thead>
+                                                                    <tr className="border-b border-slate-800">
+                                                                        <th
+                                                                            className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-cyan-400 transition"
+                                                                            onClick={() => handleSort('url')}
+                                                                        >
+                                                                            <div className="flex items-center gap-1">
+                                                                                {lang === 'pl' ? 'Adres URL' : 'URL Address'}
+                                                                                {sortConfig?.key === 'url' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                                                                            </div>
+                                                                        </th>
+                                                                        <th
+                                                                            className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-cyan-400 transition"
+                                                                            onClick={() => handleSort('seo')}
+                                                                        >
+                                                                            <div className="flex items-center gap-1">
+                                                                                SEO
+                                                                                {sortConfig?.key === 'seo' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                                                                            </div>
+                                                                        </th>
+                                                                        <th
+                                                                            className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-amber-400 transition"
+                                                                            onClick={() => handleSort('performance')}
+                                                                        >
+                                                                            <div className="flex items-center gap-1">
+                                                                                {t.scorePerformance}
+                                                                                {sortConfig?.key === 'performance' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                                                                            </div>
+                                                                        </th>
+                                                                        <th
+                                                                            className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-purple-400 transition"
+                                                                            onClick={() => handleSort('ai')}
+                                                                        >
+                                                                            <div className="flex items-center gap-1">
+                                                                                SGE
+                                                                                {sortConfig?.key === 'ai' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                                                                            </div>
+                                                                        </th>
+                                                                        <th
+                                                                            className="py-4 text-xs font-bold uppercase text-slate-500 px-2 text-center cursor-pointer hover:text-rose-400 transition"
+                                                                            onClick={() => handleSort('errors')}
+                                                                        >
+                                                                            <div className="flex items-center justify-center gap-1">
+                                                                                {lang === 'pl' ? 'Błędy' : 'Errors'}
+                                                                                {sortConfig?.key === 'errors' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                                                                            </div>
+                                                                        </th>
+                                                                        <th className="py-4 text-xs font-bold uppercase text-slate-500 px-2"></th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {currentSet.map((p, i) => (
+                                                                        <tr
+                                                                            key={i}
+                                                                            onClick={() => handleSelectPage(p.url)}
+                                                                            className="border-b border-slate-900 hover:bg-slate-800/30 transition group cursor-pointer"
+                                                                        >
+                                                                            <td className="py-4 px-2">
+                                                                                <div className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 transition break-all line-clamp-2">{p.url}</div>
+                                                                                <div className="text-[10px] text-slate-500 line-clamp-1 mt-1">{p.title}</div>
+                                                                            </td>
+                                                                            <td className="py-4 px-2">
+                                                                                <div className={`text-sm font-bold ${p.scores.seo > 80 ? 'text-emerald-400' : p.scores.seo > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
+                                                                                    {p.scores.seo}%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td className="py-4 px-2">
+                                                                                <div className={`text-sm font-bold ${p.scores.performance > 80 ? 'text-emerald-400' : p.scores.performance > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
+                                                                                    {p.scores.performance}%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td className="py-4 px-2">
+                                                                                <div className={`text-sm font-bold ${p.scores.ai > 80 ? 'text-emerald-400' : p.scores.ai > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
+                                                                                    {p.scores.ai}%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td className="py-4 px-2 text-center">
+                                                                                {p.criticalErrors > 0 ? (
+                                                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 text-[10px] font-bold">
+                                                                                        <AlertCircle className="w-2.5 h-2.5" /> {p.criticalErrors}
+                                                                                    </span>
+                                                                                ) : (
+                                                                                    <span className="text-emerald-500 text-[10px] uppercase font-bold">OK</span>
+                                                                                )}
+                                                                            </td>
+                                                                            <td className="py-4 px-2 text-right">
+                                                                                <ArrowRight className="w-4 h-4 text-slate-700 group-hover:text-cyan-400 transition" />
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+
+                                                        {totalPages > 1 && (
+                                                            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">
+                                                                <div className="text-xs text-slate-500">
+                                                                    {lang === 'pl' ? 'Strona' : 'Page'} <span className="text-slate-200 font-bold">{currentPage}</span> {lang === 'pl' ? 'z' : 'of'} <span className="text-slate-200 font-bold">{totalPages}</span>
+                                                                    <span className="mx-2 text-slate-700">|</span>
+                                                                    {lang === 'pl' ? 'Razem' : 'Total'}: <span className="text-slate-200 font-bold">{sortedPages.length}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setCurrentPage(prev => Math.max(1, prev - 1)); }}
+                                                                        disabled={currentPage === 1}
+                                                                        className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                                                    >
+                                                                        <ChevronLeft className="w-5 h-5" />
+                                                                    </button>
+
+                                                                    <div className="hidden sm:flex items-center gap-1">
+                                                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                                                            let pageNum;
+                                                                            if (totalPages <= 5) pageNum = i + 1;
+                                                                            else if (currentPage <= 3) pageNum = i + 1;
+                                                                            else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                                                            else pageNum = currentPage - 2 + i;
+
+                                                                            return (
+                                                                                <button
+                                                                                    key={pageNum}
+                                                                                    onClick={(e) => { e.stopPropagation(); setCurrentPage(pageNum); }}
+                                                                                    className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentPage === pageNum ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-500/30' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
+                                                                                >
+                                                                                    {pageNum}
+                                                                                </button>
+                                                                            );
+                                                                        })}
                                                                     </div>
-                                                                </th>
-                                                                <th
-                                                                    className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-cyan-400 transition"
-                                                                    onClick={() => handleSort('seo')}
-                                                                >
-                                                                    <div className="flex items-center gap-1">
-                                                                        SEO
-                                                                        {sortConfig?.key === 'seo' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
-                                                                    </div>
-                                                                </th>
-                                                                <th
-                                                                    className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-amber-400 transition"
-                                                                    onClick={() => handleSort('performance')}
-                                                                >
-                                                                    <div className="flex items-center gap-1">
-                                                                        {t.scorePerformance}
-                                                                        {sortConfig?.key === 'performance' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
-                                                                    </div>
-                                                                </th>
-                                                                <th
-                                                                    className="py-4 text-xs font-bold uppercase text-slate-500 px-2 cursor-pointer hover:text-purple-400 transition"
-                                                                    onClick={() => handleSort('ai')}
-                                                                >
-                                                                    <div className="flex items-center gap-1">
-                                                                        SGE
-                                                                        {sortConfig?.key === 'ai' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
-                                                                    </div>
-                                                                </th>
-                                                                <th
-                                                                    className="py-4 text-xs font-bold uppercase text-slate-500 px-2 text-center cursor-pointer hover:text-rose-400 transition"
-                                                                    onClick={() => handleSort('errors')}
-                                                                >
-                                                                    <div className="flex items-center justify-center gap-1">
-                                                                        {lang === 'pl' ? 'Błędy' : 'Errors'}
-                                                                        {sortConfig?.key === 'errors' && (sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
-                                                                    </div>
-                                                                </th>
-                                                                <th className="py-4 text-xs font-bold uppercase text-slate-500 px-2"></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {getSortedPages(report.pages).map((p, i) => (
-                                                                <tr
-                                                                    key={i}
-                                                                    onClick={() => handleSelectPage(p.url)}
-                                                                    className="border-b border-slate-900 hover:bg-slate-800/30 transition group cursor-pointer"
-                                                                >
-                                                                    <td className="py-4 px-2">
-                                                                        <div className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 transition break-all line-clamp-2">{p.url}</div>
-                                                                        <div className="text-[10px] text-slate-500 line-clamp-1 mt-1">{p.title}</div>
-                                                                    </td>
-                                                                    <td className="py-4 px-2">
-                                                                        <div className={`text-sm font-bold ${p.scores.seo > 80 ? 'text-emerald-400' : p.scores.seo > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
-                                                                            {p.scores.seo}%
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="py-4 px-2">
-                                                                        <div className={`text-sm font-bold ${p.scores.performance > 80 ? 'text-emerald-400' : p.scores.performance > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
-                                                                            {p.scores.performance}%
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="py-4 px-2">
-                                                                        <div className={`text-sm font-bold ${p.scores.ai > 80 ? 'text-emerald-400' : p.scores.ai > 50 ? 'text-amber-400' : 'text-rose-400'}`}>
-                                                                            {p.scores.ai}%
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="py-4 px-2 text-center">
-                                                                        {p.criticalErrors > 0 ? (
-                                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500 text-[10px] font-bold">
-                                                                                <AlertCircle className="w-2.5 h-2.5" /> {p.criticalErrors}
-                                                                            </span>
-                                                                        ) : (
-                                                                            <span className="text-emerald-500 text-[10px] uppercase font-bold">OK</span>
-                                                                        )}
-                                                                    </td>
-                                                                    <td className="py-4 px-2 text-right">
-                                                                        <ArrowRight className="w-4 h-4 text-slate-700 group-hover:text-cyan-400 transition" />
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </section>
+
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setCurrentPage(prev => Math.min(totalPages, prev + 1)); }}
+                                                                        disabled={currentPage === totalPages}
+                                                                        className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                                                    >
+                                                                        <ChevronRight className="w-5 h-5" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </section>
+                                                )
+                                            })()
                                         ) : (
                                             <section className="glass-morphism p-8 rounded-3xl">
                                                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
